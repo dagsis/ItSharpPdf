@@ -31,6 +31,44 @@ namespace ItSharpPdf.Controllers
             _context = context;
         }
 
+        public IActionResult BarCode()
+        {
+            Document doc = new Document(PageSize.A4);
+
+
+            doc.SetMargins(85f,28.34f,85f,28.34f); // Igual a un cm
+
+            MemoryStream ms = new MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(doc, ms);
+
+            doc.AddAuthor("Carlos D Agostino");
+            doc.AddTitle("Pdf BarCode");
+            doc.Open();
+
+            BarcodeInter25 code25 = new BarcodeInter25();
+            Rectangle r = new iTextSharp.text.Rectangle(38, 152);
+            code25.ChecksumText = false;
+            code25.Code = "1462029681051408202019603171969320";
+            code25.BarHeight = 40;
+            PdfContentByte cb = writer.DirectContent;
+            iTextSharp.text.Image img = code25.CreateImageWithBarcode(cb, null, null);
+            doc.Add(img);
+
+            doc.Add(new Paragraph());
+
+
+            writer.Close();
+            doc.Close();
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            //file.Dispose();
+
+            //return File(new FileStream("hola mundo.pdf",FileMode.Open,FileAccess.Read),"application/pdf");
+
+              return File(ms.ToArray(), "application/pdf");
+        }
+
         public IActionResult Index()
         {
             //Document doc = new Document(PageSize.A4);
